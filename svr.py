@@ -64,21 +64,19 @@ class SVRPredictor:
             [description] MSE of predict and accurate output
         """
         err0 = [] # MSE
-        err1 = [] # AE
+        #err1 = [] # AE
         for i in range(test_data_y.shape[0]):
             if i == 0:
                 continue
             sum0 = 0
             #sum1 = 0
             time_pre = predict_data_y[i]
-            for j in range(test_data_y.shape[1]):
-                time_test = test_data_y[i][j]
-                sum0 = (time_pre - time_test) * (time_pre - time_test) / time_pre / time_pre 
+            time_test = test_data_y[i][0]
+            sum0 = (time_pre - time_test) * (time_pre - time_test) / time_pre / time_pre 
             err0.append(np.sqrt(sum0/12))
             #err1.append(np.absolute(sum1)/12)
         err0 = np.array(err0)
-        #err1 = np.array(err1)
-        #if opt == 1:
+        #err1 = np.array(err10        #if opt == 1:
         #    return err1
         #else:
         #    return err0
@@ -131,7 +129,7 @@ class SVRPredictor:
         plt.close()
 
         # Error Analysis
-        err = self.error_analysis(test_data_y, predict_data_y, 0)
+        err = self.error_analysis(test_data_y, predict_data_y)
         # print(err)
         if dopt == 1:
             plt.plot(np.array(range(int(0.8*len(err)), len(err))), err[int(0.8*len(err)):], color = 'red', label = 'MSE')

@@ -2,10 +2,12 @@ from data import Data
 from svr import SVRPredictor
 import numpy as np
 import joblib
+#from sklearn import dump
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from keras.models import load_model
 import sys
+
 
 pre_train = 0 # if pre_train = 1, use the saved model
 dopt = 1  # draw option, draw all points if dopt = 0, draw last 20% points if dopt = 1
@@ -35,8 +37,8 @@ for ax in axes.flatten():
 
 for i, chip_id in enumerate(chip_ids):
     AgingData = Data(chip_id, train_sheet_num)
-    train_data_x, train_data_y = AgingData.get_train_data()
-    test_data_x, test_data_y = AgingData.get_test_data()
+    train_data_x, train_data_y = AgingData.get_train_data_gause()
+    test_data_x, test_data_y = AgingData.get_test_data_gause()
     train_data_x_array = train_data_x.reshape(-1,1)
     train_data_y_array = train_data_y.reshape(-1,1)
     test_data_x_array = test_data_x.reshape(-1,1)
@@ -47,6 +49,7 @@ for i, chip_id in enumerate(chip_ids):
     else: 
         Predictor = SVRPredictor(chip_id)
         Predictor.train(train_data_x_array, train_data_y_array)
+        #joblib.dump(clf,"../model/predictor"+str(0)+str(i)+".pkl")
     predict_data_y = Predictor.predict(test_data_x_array)
     #Predictor.draw(train_data_x, train_data_y, test_data_x, test_data_y, dopt)
     #for j in range(test_data_y.shape[1]):
@@ -55,8 +58,8 @@ for i, chip_id in enumerate(chip_ids):
     #    else:
     #        axes[i].scatter(np.array(range(test_data_y.shape[0])), test_data_y[:, j], s = ssz, color = 'black')
     ## calculate avg val of test_data_y and draw blue line
-    avg = np.mean(test_data_y_array, axis = 1)
-    axes[i].plot(np.array(range(test_data_y_array.shape[0])), avg, color = 'green', label = 'average value', linewidth = linewidth)
+    #avg = np.mean(test_data_y_array, axis = 1)
+    axes[i].plot(np.array(range(test_data_y_array.shape[0])), test_data_y, color = 'green', label = 'practical value', linewidth = linewidth)
     axes[i].plot(np.array(range(len(predict_data_y))), predict_data_y, color = 'red', label = 'evaluation result', linewidth = linewidth)
 
     axes[i].set_title('Chip ' + str(i), fontsize = stitlesz)
@@ -79,8 +82,8 @@ for ax in axes.flatten():
 
 for i, chip_id in enumerate(chip_ids):
     AgingData = Data(chip_id, train_sheet_num)
-    train_data_x, train_data_y = AgingData.get_train_data()
-    test_data_x, test_data_y = AgingData.get_test_data()
+    train_data_x, train_data_y = AgingData.get_train_data_gause()
+    test_data_x, test_data_y = AgingData.get_test_data_gause()
     train_data_x_array = train_data_x.reshape(-1,1)
     train_data_y_array = train_data_y.reshape(-1,1)
     test_data_x_array = test_data_x.reshape(-1,1)
@@ -95,14 +98,14 @@ for i, chip_id in enumerate(chip_ids):
     predict_data_y = Predictor.predict(test_data_x_array)
     err = Predictor.error_analysis(test_data_y_array, predict_data_y)
     print('last 10% NRMSE of SVR evaluation on chip '+str(i)+':\n')
-    #print(err[int(0.9*len(err)):], '\n')
+    print(err[int(0.9*len(err)):], '\n')
     print('AVG on last 10%: ', np.mean(err[int(0.9*len(err)):]))
     print('AVG on last 5%: ', np.mean(err[int(0.95*len(err)):]), '\n\n')
     err = []
     for j in range(test_data_y_array.shape[0]):
         
         dp = predict_data_y[j]
-        avg = np.mean(test_data_y_array[j])
+        avg = test_data_y[j]
         err.append((dp-avg)*(dp-avg)/avg/avg)
     err = np.array(err)
     axes[i].plot(np.array(range(10, len(err)))+10, err[10:], color = 'red')

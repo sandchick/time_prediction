@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from scipy.ndimage import gaussian_filter1d
 
 # Train Data Valid
 # If TrainMap[i][j] = 1, Chip_i_Excel[sheet_num = j] is valid
@@ -38,6 +39,32 @@ class Data:
             self.train_data.append(data_array)
         data  = pd.read_excel(test_data_file, header = None)
         self.test_data = np.array(data)
+
+    def get_train_data_gause(self):
+        for sheet in range(len(self.train_data)):
+            mean = np.zeros(self.train_data[sheet].shape[0]) 
+            RUL = np.zeros(self.train_data[sheet].shape[0]) 
+            for i in range(self.train_data[sheet].shape[0]):
+                mean[i] = np.mean(self.train_data[sheet][i][10:])
+                fail_time = max(self.train_data[sheet][:,1])
+                RUL[i] = fail_time - self.train_data[sheet][i][1]
+            gause_value = gaussian_filter1d(mean,3)
+            train_data_list = list(zip(gause_value,RUL))
+        self.train_gause_array = np.array(train_data_list)
+        return self.train_gause_array[:,0], self.train_gause_array[:,1]
+
+
+    def get_test_data_gause(self):
+        mean = np.zeros(self.test_data.shape[0]) 
+        RUL = np.zeros(self.test_data.shape[0]) 
+        for i in range(self.test_data.shape[0]):
+            mean[i] = np.mean(self.test_data[i][10:])
+            fail_time = max(self.test_data[:,1])
+            RUL[i] = fail_time - self.test_data[i][1]
+        gause_value = gaussian_filter1d(mean,3)
+        test_data_list=list(zip(gause_value,RUL))
+        self.test_gause_array = np.array(test_data_list)
+        return self.test_gause_array[:,0], self.test_gause_array[:,1]
 
     def get_train_data(self):
         """return data for svr training
@@ -96,6 +123,7 @@ class Data:
         #    #    print (f"testdata,chip={self.chip_id},y={i}") 
         #self.test_array = np.array(test_data_list)
         #self.test_array = np.insert(self.test_array,1,values=rul,axis=1)
+        print(f"origin test{np.shape(self.test_array)}")
         return self.test_array[:,0], self.test_array[:,1]
 
     def debug(self):
