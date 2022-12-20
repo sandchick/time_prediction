@@ -42,6 +42,10 @@ class Data:
 
     def get_train_data_gause(self):
         for sheet in range(len(self.train_data)):
+            #test data from RO
+            if sheet == 0:
+                continue
+            #test data from RO
             mean = np.zeros(self.train_data[sheet].shape[0]) 
             RUL = np.zeros(self.train_data[sheet].shape[0]) 
             for i in range(self.train_data[sheet].shape[0]):
@@ -65,6 +69,18 @@ class Data:
         test_data_list=list(zip(gause_value,RUL))
         self.test_gause_array = np.array(test_data_list)
         return self.test_gause_array[:,0], self.test_gause_array[:,1]
+    
+    def get_test_data_from_RO(self):
+        mean = np.zeros(self.train_data[0].shape[0]) 
+        RUL = np.zeros(self.train_data[0].shape[0]) 
+        for i in range(self.train_data[0].shape[0]):
+            mean[i] = np.mean(self.train_data[0][i][10:])
+            fail_time = max(self.train_data[0][:,1])
+            RUL[i] = fail_time - self.train_data[0][i][1]
+        gause_value = gaussian_filter1d(mean,3)
+        train_data_list = list(zip(gause_value,RUL))
+        self.test_gause_array_RO = np.array(train_data_list)
+        return self.test_gause_array_RO[:,0], self.test_gause_array_RO[:,1]
 
     def get_train_data(self):
         """return data for svr training

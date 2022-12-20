@@ -38,7 +38,8 @@ for ax in axes.flatten():
 for i, chip_id in enumerate(chip_ids):
     AgingData = Data(chip_id, train_sheet_num)
     train_data_x, train_data_y = AgingData.get_train_data_gause()
-    test_data_x, test_data_y = AgingData.get_test_data_gause()
+    #test_data_x, test_data_y = AgingData.get_test_data_gause()
+    test_data_x, test_data_y = AgingData.get_test_data_from_RO()
     train_data_x_array = train_data_x.reshape(-1,1)
     train_data_y_array = train_data_y.reshape(-1,1)
     test_data_x_array = test_data_x.reshape(-1,1)
@@ -83,7 +84,8 @@ for ax in axes.flatten():
 for i, chip_id in enumerate(chip_ids):
     AgingData = Data(chip_id, train_sheet_num)
     train_data_x, train_data_y = AgingData.get_train_data_gause()
-    test_data_x, test_data_y = AgingData.get_test_data_gause()
+    #test_data_x, test_data_y = AgingData.get_test_data_gause()
+    test_data_x, test_data_y = AgingData.get_test_data_from_RO()
     train_data_x_array = train_data_x.reshape(-1,1)
     train_data_y_array = train_data_y.reshape(-1,1)
     test_data_x_array = test_data_x.reshape(-1,1)
