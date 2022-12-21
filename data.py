@@ -11,10 +11,9 @@ TrainMap = [[1,0,0,1,1,1,1,1,1,1,1,1,1,1,1],
             [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
             [1,1,1,1,1,1,0,0,0,0,0,0,0,0,0],
             [1,1,1,1,1,1,0,1,1,1,1,1,1,1,1],
-            [1,1,1,1,1,1,0,0,1,1,1,1,0,0,0],
+            [1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
             [1,1,1,1,1,1,0,1,1,1,1,1,1,1,1],
             [1,1,1,1,1,0,1,1,0,1,1,1,1,1,1]]
-
 class Data:
     """ Pre-Process Data for model training and testing
     """    
@@ -43,6 +42,8 @@ class Data:
     def get_train_data_gause(self):
         train_data_list = []
         for sheet in range(len(self.train_data)):
+            if (TrainMap[self.chip_id][sheet] == 0):
+                continue
             #test data from RO
             #if sheet == 0:
             #    continue
@@ -56,6 +57,8 @@ class Data:
             gause_value = gaussian_filter1d(mean,3)
             train_data_list_single = list(zip(gause_value,RUL))
             train_data_list.extend(train_data_list_single)
+            #if(np.isnan(train_data_list).any()):
+            #    print (f"traindata,chip={self.chip_id},sheet={sheet}")
         self.train_gause_array = np.array(train_data_list)
         #print(np.shape(self.train_gause_array),np.shape(train_data_list))
         return self.train_gause_array[:,0], self.train_gause_array[:,1]
@@ -70,6 +73,8 @@ class Data:
             RUL[i] = fail_time - self.test_data[i][1]
         gause_value = gaussian_filter1d(mean,3)
         test_data_list=list(zip(gause_value,RUL))
+       # if(np.isnan(test_data_list).any()):
+       #     print (f"testdata,chip={self.chip_id}")
         self.test_gause_array = np.array(test_data_list)
         return self.test_gause_array[:,0], self.test_gause_array[:,1]
     
