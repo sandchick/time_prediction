@@ -31,7 +31,7 @@ class SVRPredictor:
         train_data_y : [type] ndarray
             [description] train data output
         """
-        self.model.fit(train_data_x * 100, train_data_y )
+        self.model.fit(train_data_x *100 , train_data_y)
 
     def predict(self, test_data_x):
         """predict by trained model
@@ -46,7 +46,7 @@ class SVRPredictor:
         [type] ndarray
             [description] predict result with test data in
         """        
-        return self.model.predict(test_data_x) * 100
+        return self.model.predict(test_data_x *100) 
 
     def error_analysis(self, test_data_y, predict_data_y):
         """Analysis error rate

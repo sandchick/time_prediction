@@ -41,10 +41,11 @@ class Data:
         self.test_data = np.array(data)
 
     def get_train_data_gause(self):
+        train_data_list = []
         for sheet in range(len(self.train_data)):
             #test data from RO
-            if sheet == 0:
-                continue
+            #if sheet == 0:
+            #    continue
             #test data from RO
             mean = np.zeros(self.train_data[sheet].shape[0]) 
             RUL = np.zeros(self.train_data[sheet].shape[0]) 
@@ -53,8 +54,10 @@ class Data:
                 fail_time = max(self.train_data[sheet][:,1])
                 RUL[i] = fail_time - self.train_data[sheet][i][1]
             gause_value = gaussian_filter1d(mean,3)
-            train_data_list = list(zip(gause_value,RUL))
+            train_data_list_single = list(zip(gause_value,RUL))
+            train_data_list.extend(train_data_list_single)
         self.train_gause_array = np.array(train_data_list)
+        #print(np.shape(self.train_gause_array),np.shape(train_data_list))
         return self.train_gause_array[:,0], self.train_gause_array[:,1]
 
 
@@ -139,7 +142,7 @@ class Data:
         #    #    print (f"testdata,chip={self.chip_id},y={i}") 
         #self.test_array = np.array(test_data_list)
         #self.test_array = np.insert(self.test_array,1,values=rul,axis=1)
-        print(f"origin test{np.shape(self.test_array)}")
+        #print(f"origin test{np.shape(self.test_array)}")
         return self.test_array[:,0], self.test_array[:,1]
 
     def debug(self):
