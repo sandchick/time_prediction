@@ -5,7 +5,7 @@ from scipy.ndimage import gaussian_filter1d
 
 # Train Data Valid
 # If TrainMap[i][j] = 1, Chip_i_Excel[sheet_num = j] is valid
-TrainMap = [[1,0,0,1,1,1,1,1,1,1,1,1,1,1,1],
+TrainMap = [[1,0,0,1,1,1,1,1,1,1,1,1,1,0,1],
             [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
             [1,1,1,1,1,1,0,0,1,1,0,1,1,1,1],
             [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -42,7 +42,7 @@ class Data:
     def get_train_data_gause(self):
         train_data_list = []
         for sheet in range(len(self.train_data)):
-            if (TrainMap[self.chip_id][sheet] == 0):
+            if (TrainMap[self.chip_id][sheet] == 0 or sheet == 0):
                 continue
             #test data from RO
             #if sheet == 0:
@@ -52,10 +52,14 @@ class Data:
             RUL = np.zeros(self.train_data[sheet].shape[0]) 
             for i in range(self.train_data[sheet].shape[0]):
                 mean[i] = np.mean(self.train_data[sheet][i][10:])
-                fail_time = max(self.train_data[sheet][:,1])
-                RUL[i] = fail_time - self.train_data[sheet][i][1]
+                #fail_time = max(self.train_data[sheet][:,1])
+                #RUL[i] = fail_time - self.train_data[sheet][i][1]
+            AFR = np.zeros(self.train_data[sheet].shape[0]) 
+            for i in range(len(mean)):
+                AFR[i] = abs(mean[i]-0.01)
+            RULI = AFR.index(min(AFR))
             gause_value = gaussian_filter1d(mean,3)
-            train_data_list_single = list(zip(gause_value,RUL))
+            train_data_list_single = list(zip(gause_value,RULI))
             train_data_list.extend(train_data_list_single)
             #if(np.isnan(train_data_list).any()):
             #    print (f"traindata,chip={self.chip_id},sheet={sheet}")

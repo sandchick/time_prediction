@@ -8,7 +8,7 @@ from keras.models import load_model
 import sys
 
 sys.stdout = open("../ea_log/nan_error.txt","wt")
-chip_ids = [2,4,5,6,7]
+chip_ids = [0,2,4,5,6,7]
 for i, chip_id in enumerate(chip_ids):
     AgingData = Data(chip_id, 15)
     #train_data_x, train_data_y = AgingData.get_train_data()

@@ -82,7 +82,7 @@ class SVRPredictor:
         #    return err0
         return err0
 
-    def draw(self, train_data_x, train_data_y, test_data_x, test_data_y, dopt):
+    def draw(self, train_data_x, train_data_y, test_data_x, test_data_y, predict_data_y, dopt):
         """draw picture to analysis
 
         Parameters
@@ -122,7 +122,7 @@ class SVRPredictor:
             plt.plot(np.array(range(test_data_y.shape[0])), test_data_y[:, i], color = colors[i])
         plt.plot(np.array(range(len(predict_data_y))), predict_data_y, color = 'black', label = 'predict')
         plt.xlabel('points')
-        plt.ylabel('Delta delay')
+        plt.ylabel('RUL')
         plt.title('SVR Predict Result on Chip ' + str(self.chip_id) + ' Test Dataset')
         plt.legend()
         plt.savefig('../img/self_validation/svr_chip'+str(self.chip_id)+'_test.png')
