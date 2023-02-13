@@ -11,10 +11,11 @@ import sys
 
 pre_train = 0 # if pre_train = 1, use the saved model
 dopt = 1  # draw option, draw all points if dopt = 0, draw last 20% points if dopt = 1
-chip_ids = [0, 2, 4, 5, 6, 7]
+chip_ids = [2, 4, 5, 6, 7]
 train_sheet_num = 15
 #Arch = [128, 32, 8, 2, 1]
-pcolors = ['b', 'g', 'm', 'r', 'y', 'p']
+#pcolors = ['b', 'g', 'm', 'r', 'y', 'p']
+pcolors = ['b', 'g', 'm', 'r', 'y']
 
 mtitlesz = 60
 stitlesz = 56
@@ -27,7 +28,7 @@ ssz = 16
 sys.stdout = open("../ea_log/log.txt","wt")
 
 # draw paper figures
-fig, axes = plt.subplots(1, 6, figsize = (80, 13))
+fig, axes = plt.subplots(1, 5, figsize = (80, 13))
 
 for ax in axes.flatten():
     labels = ax.get_xticklabels() + ax.get_yticklabels()
@@ -38,8 +39,10 @@ for ax in axes.flatten():
 for i, chip_id in enumerate(chip_ids):
     AgingData = Data(chip_id, train_sheet_num)
     train_data_x, train_data_y = AgingData.get_train_data_gause()
-    #test_data_x, test_data_y = AgingData.get_test_data_gause()
-    test_data_x, test_data_y = AgingData.get_test_data_from_RO()
+    test_data_x, test_data_y = AgingData.get_test_data_gause()
+    #predict_index = int((len(train_data_x) * 0.7)) 
+    #train_data_x_predict = train_data_x[0:predict_index]
+    #test_data_x, test_data_y = AgingData.get_test_data_from_RO()
     train_data_x_array = train_data_x.reshape(-1,1)
     train_data_y_array = train_data_y.reshape(-1,1)
     test_data_x_array = test_data_x.reshape(-1,1)
@@ -63,8 +66,8 @@ for i, chip_id in enumerate(chip_ids):
 axes[0].set_ylabel('RUL', fontsize = labelsz, labelpad = 30)
 handles,labels = ax.get_legend_handles_labels()
 
-handles = [handles[2], handles[0], handles[1]]
-labels = [labels[2], labels[0], labels[1]]
+#handles = [handles[2], handles[0], handles[1]]
+#labels = [labels[2], labels[0], labels[1]]
 
 ax.legend(handles,labels,loc=5, bbox_to_anchor=(1.5, 0, 0.4, 1), fontsize = labelsz)
 plt.suptitle('SVR Evaluation Results', fontsize = mtitlesz, x = 0.5, y = 1.03)
@@ -79,8 +82,8 @@ for ax in axes.flatten():
 for i, chip_id in enumerate(chip_ids):
     AgingData = Data(chip_id, train_sheet_num)
     train_data_x, train_data_y = AgingData.get_train_data_gause()
-    #test_data_x, test_data_y = AgingData.get_test_data_gause()
-    test_data_x, test_data_y = AgingData.get_test_data_from_RO()
+    test_data_x, test_data_y = AgingData.get_test_data_gause()
+    #test_data_x, test_data_y = AgingData.get_test_data_from_RO()
     train_data_x_array = train_data_x.reshape(-1,1)
     train_data_y_array = train_data_y.reshape(-1,1)
     test_data_x_array = test_data_x.reshape(-1,1)

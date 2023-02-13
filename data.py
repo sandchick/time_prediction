@@ -32,6 +32,7 @@ class Data:
         train_data_file = '../data/Chip' + str(self.chip_id) + 'TrainFilt.xlsx' 
         test_data_file = '../data/Chip' + str(self.chip_id) + 'TestFilt.xlsx' 
         self.train_data = []
+        self.threshold_AF = 0.03
         for sheet in range(train_sheet_num):
             data = pd.read_excel(train_data_file, sheet_name = sheet, header = None)
             data_array = np.array(data)
@@ -48,18 +49,24 @@ class Data:
             #if sheet == 0:
             #    continue
             #test data from RO
-            mean = np.zeros(self.train_data[sheet].shape[0]) 
-            RUL = np.zeros(self.train_data[sheet].shape[0]) 
+            mean_ini = np.zeros(self.train_data[sheet].shape[0]) 
             for i in range(self.train_data[sheet].shape[0]):
-                mean[i] = np.mean(self.train_data[sheet][i][10:])
-                #fail_time = max(self.train_data[sheet][:,1])
-                #RUL[i] = fail_time - self.train_data[sheet][i][1]
+                mean_ini[i] = np.mean(self.train_data[sheet][i][10:])
+            gause_value_ini = gaussian_filter1d(mean_ini,3)
+            RUL = np.zeros(self.train_data[sheet].shape[0]) 
             AFR = np.zeros(self.train_data[sheet].shape[0]) 
-            for i in range(len(mean)):
-                AFR[i] = abs(mean[i]-0.01)
-            RULI = AFR.index(min(AFR))
+            for i in range(len(mean_ini)):
+                AFR[i] = abs(gause_value_ini[i]-self.threshold_AF)
+            AFR = AFR.tolist()
+            FT = AFR.index(min(AFR))
+            #print (f"failure threshold = {FT}")
+            mean = np.zeros(FT)
+            for i in range(FT):
+                mean[i] = np.mean(self.train_data[sheet][i][10:])
+                fail_time = self.train_data[sheet][FT][1]
+                RUL[i] = fail_time - self.train_data[sheet][i][1]
             gause_value = gaussian_filter1d(mean,3)
-            train_data_list_single = list(zip(gause_value,RULI))
+            train_data_list_single = list(zip(gause_value,RUL))
             train_data_list.extend(train_data_list_single)
             #if(np.isnan(train_data_list).any()):
             #    print (f"traindata,chip={self.chip_id},sheet={sheet}")
@@ -69,12 +76,26 @@ class Data:
 
 
     def get_test_data_gause(self):
-        mean = np.zeros(self.test_data.shape[0]) 
+        mean_ini = np.zeros(self.test_data.shape[0]) 
         RUL = np.zeros(self.test_data.shape[0]) 
         for i in range(self.test_data.shape[0]):
+            mean_ini[i] = np.mean(self.test_data[i][10:])
+        gause_value_ini = gaussian_filter1d(mean_ini,3)
+        AFR = np.zeros(self.test_data.shape[0])
+        for i in range(self.test_data.shape[0]):
+            AFR[i] = abs(gause_value_ini[i]-self.threshold_AF)
+        #print(AFR)
+        AFR = AFR.tolist()
+        #print(AFR)
+        FT = AFR.index(min(AFR))
+        print (f"failure threshold = {FT}")
+        mean = np.zeros(FT) 
+        for i in range(FT):
             mean[i] = np.mean(self.test_data[i][10:])
-            fail_time = max(self.test_data[:,1])
+            fail_time = self.test_data[FT][1]
             RUL[i] = fail_time - self.test_data[i][1]
+        #print (f"fail time = {fail_time}")
+        #print (f"RUL")
         gause_value = gaussian_filter1d(mean,3)
         test_data_list=list(zip(gause_value,RUL))
        # if(np.isnan(test_data_list).any()):
@@ -83,11 +104,23 @@ class Data:
         return self.test_gause_array[:,0], self.test_gause_array[:,1]
     
     def get_test_data_from_RO(self):
-        mean = np.zeros(self.train_data[0].shape[0]) 
+        mean_ini = np.zeros(self.train_data[0].shape[0]) 
         RUL = np.zeros(self.train_data[0].shape[0]) 
         for i in range(self.train_data[0].shape[0]):
+            mean_ini[i] = np.mean(self.train_data[0][i][10:])
+        gause_value_ini = gaussian_filter1d(mean_ini,3)
+        AFR = np.zeros(self.train_data[0].shape[0])
+        for i in range(self.train_data[0].shape[0]):
+            AFR[i] = abs(gause_value_ini[i]-0.01)
+        #print(AFR)
+        AFR = AFR.tolist()
+        #print(AFR)
+        FT = AFR.index(min(AFR))
+        print (f"failure threshold ={self.chip_id} , {FT}")
+        mean = np.zeros(FT) 
+        for i in range(FT):
             mean[i] = np.mean(self.train_data[0][i][10:])
-            fail_time = max(self.train_data[0][:,1])
+            fail_time = self.train_data[0][FT][1]
             RUL[i] = fail_time - self.train_data[0][i][1]
         gause_value = gaussian_filter1d(mean,3)
         train_data_list = list(zip(gause_value,RUL))
