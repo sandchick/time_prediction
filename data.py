@@ -32,7 +32,7 @@ class Data:
         train_data_file = '../data/Chip' + str(self.chip_id) + 'TrainFilt.xlsx' 
         test_data_file = '../data/Chip' + str(self.chip_id) + 'TestFilt.xlsx' 
         self.train_data = []
-        self.threshold_AF = 0.03
+        self.threshold_AF = 0.012
         for sheet in range(train_sheet_num):
             data = pd.read_excel(train_data_file, sheet_name = sheet, header = None)
             data_array = np.array(data)
@@ -101,7 +101,7 @@ class Data:
        # if(np.isnan(test_data_list).any()):
        #     print (f"testdata,chip={self.chip_id}")
         self.test_gause_array = np.array(test_data_list)
-        return self.test_gause_array[:,0], self.test_gause_array[:,1]
+        return self.test_gause_array[:,0], self.test_gause_array[:,1], self.threshold_AF
     
     def get_test_data_from_RO(self):
         mean_ini = np.zeros(self.train_data[0].shape[0]) 
