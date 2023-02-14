@@ -32,7 +32,7 @@ class Data:
         train_data_file = '../data/Chip' + str(self.chip_id) + 'TrainFilt.xlsx' 
         test_data_file = '../data/Chip' + str(self.chip_id) + 'TestFilt.xlsx' 
         self.train_data = []
-        self.threshold_AF = 0.012
+        self.threshold_AF = 0.032
         for sheet in range(train_sheet_num):
             data = pd.read_excel(train_data_file, sheet_name = sheet, header = None)
             data_array = np.array(data)
@@ -74,6 +74,21 @@ class Data:
         #print(np.shape(self.train_gause_array),np.shape(train_data_list))
         return self.train_gause_array[:,0], self.train_gause_array[:,1]
 
+    def get_iterative_data(self):
+        iterative_width = 50
+        train_data_list = []
+        mean = np.zeros(self.test_data.shape(0))
+        for i in range(self.test_data.shape(0)):
+            mean[i] = np.mean(self.test_data[i][10:])
+        gause_value = gaussian_filter1d(mean,3)
+        AF_timestamp = list(zip(gause_value,self.test_data[:,1]))
+        for i in range(self.test_data.shape(0)):
+            if i == 0:
+                continue
+            time_weight = AF_timestamp[i][1] - AF_timestamp[i-1][1]
+            AF_fill = (AF_timestamp[i][0] - AF_timestamp[i-1][0])/2
+
+
 
     def get_test_data_gause(self):
         mean_ini = np.zeros(self.test_data.shape[0]) 
@@ -88,7 +103,7 @@ class Data:
         AFR = AFR.tolist()
         #print(AFR)
         FT = AFR.index(min(AFR))
-        print (f"failure threshold = {FT}")
+        #print (f"failure threshold = {FT}")
         mean = np.zeros(FT) 
         for i in range(FT):
             mean[i] = np.mean(self.test_data[i][10:])
