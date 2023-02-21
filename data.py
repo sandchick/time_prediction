@@ -75,18 +75,31 @@ class Data:
         return self.train_gause_array[:,0], self.train_gause_array[:,1]
 
     def get_iterative_data(self):
-        iterative_width = 50
-        train_data_list = []
-        mean = np.zeros(self.test_data.shape(0))
-        for i in range(self.test_data.shape(0)):
+        #iterative_width = 50
+        #train_data_list = []
+        mean = np.zeros(self.test_data.shape[0])
+        for i in range(self.test_data.shape[0]):
             mean[i] = np.mean(self.test_data[i][10:])
         gause_value = gaussian_filter1d(mean,3)
         AF_timestamp = list(zip(gause_value,self.test_data[:,1]))
-        for i in range(self.test_data.shape(0)):
-            if i == 0:
+        print(f"before = {AF_timestamp}")
+        time_weights = np.zeros(self.test_data.shape[0] - 1)
+        for i in range(self.test_data.shape[0]-1):
+            time_weights[i] = int(AF_timestamp[i + 1][1] - AF_timestamp[i][1])
+        
+        print(f"time weight = {time_weights}")
+        for i in range(len(time_weights)):
+            if time_weights[i] == 1:
                 continue
-            time_weight = AF_timestamp[i][1] - AF_timestamp[i-1][1]
-            AF_fill = (AF_timestamp[i][0] - AF_timestamp[i-1][0])/2
+            #for time_weight in range(int(time_weights[i])):
+                #print(f"time weight = {time_weight}")
+            AF_fill = np.zeros((int(time_weights[i])-1,2))
+            for time_increase in range (int(time_weights[i])-1):
+                AF_fill[time_increase][0] = AF_timestamp[i][0] + ((time_increase + 1) * (AF_timestamp[i+1][0] - AF_timestamp[i][0]))/time_weights[i]
+                AF_fill[time_increase][1] = AF_timestamp[i][1] + time_increase + 1
+            print(f"AF_fill = {AF_fill}")
+            AF_timestamp = np.insert(AF_timestamp, int(AF_timestamp[i][1]), AF_fill, axis = 0)
+        print(f"after = {AF_timestamp}")
 
 
 
