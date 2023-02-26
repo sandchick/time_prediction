@@ -75,19 +75,24 @@ class Data:
         return self.train_gause_array[:,0], self.train_gause_array[:,1]
 
     def get_iterative_data(self):
-        #iterative_width = 50
-        #train_data_list = []
+        iterative_width = 50
+        train_data_list = []
         mean = np.zeros(self.test_data.shape[0])
         for i in range(self.test_data.shape[0]):
             mean[i] = np.mean(self.test_data[i][10:])
-        gause_value = gaussian_filter1d(mean,3)
+        #gause_value = gaussian_filter1d(mean,3)
+        gause_value = mean
         AF_timestamp = list(zip(gause_value,self.test_data[:,1]))
-        print(f"before = {AF_timestamp}")
+        AF_timestamp_fill = np.zeros((1,2))
+        #print(np.shape(AF_timestamp_new))
+        #print(f"before = {AF_timestamp}")
+        AF_timestamp_list = [[x for x in tup] for tup in AF_timestamp]
+        #print(f"before_list = {AF_timestamp_list}")
         time_weights = np.zeros(self.test_data.shape[0] - 1)
         for i in range(self.test_data.shape[0]-1):
             time_weights[i] = int(AF_timestamp[i + 1][1] - AF_timestamp[i][1])
-        
-        print(f"time weight = {time_weights}")
+        #print(len(time_weights),self.test_data.shape[0])
+        #print(f"time weight = {time_weights}")
         for i in range(len(time_weights)):
             if time_weights[i] == 1:
                 continue
@@ -97,9 +102,20 @@ class Data:
             for time_increase in range (int(time_weights[i])-1):
                 AF_fill[time_increase][0] = AF_timestamp[i][0] + ((time_increase + 1) * (AF_timestamp[i+1][0] - AF_timestamp[i][0]))/time_weights[i]
                 AF_fill[time_increase][1] = AF_timestamp[i][1] + time_increase + 1
-            print(f"AF_fill = {AF_fill}")
-            AF_timestamp = np.insert(AF_timestamp, int(AF_timestamp[i][1]), AF_fill, axis = 0)
-        print(f"after = {AF_timestamp}")
+            #print(f"AF_fill = {AF_fill}")
+            AF_timestamp_fill = np.concatenate((AF_timestamp_fill,AF_fill),axis=0)
+        #print(f"after = {AF_timestamp_fill}")
+        AF_timestamp_fill = np.concatenate((AF_timestamp_fill,AF_timestamp_list),axis=0) 
+        AF_timestamp_fill = AF_timestamp_fill[np.argsort(AF_timestamp_fill[:,1])]
+        AF_timestamp_fill = np.delete(AF_timestamp_fill, 0 , axis=0) 
+        #print(f"after = {AF_timestamp_fill}")
+        for i in range (AF_timestamp_fill.shape[0]-iterative_width):
+            vector = np.zeros(iterative_width + 1)
+            vector[0:iterative_width] = [row[0] for row in AF_timestamp_fill[ i : i + iterative_width]]
+            vector[iterative_width] = AF_timestamp_fill[i + iterative_width][0]
+            train_data_list.append(vector)
+        train_data_array = np.array(train_data_list)
+        return train_data_array[:,:-1], train_data_array[:,-1]
 
 
 

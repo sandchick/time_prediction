@@ -30,8 +30,7 @@ for i, chip_id in enumerate(chip_ids):
     #test_data_y_array = test_data_y.reshape(-1,1)
     #print(f"train_data_x={np.shape(train_data_x_array)},train_data_y={np.shape(train_data_y_array)}")
     #print(f"test_data_x={np.shape(test_data_x_array)},test_data_y={np.shape(test_data_y_array)}")
-    #print(f"train_data={test_data_y_array.shape[0]}")
-    #gause_train_data, mean_train_data= AgingData.get_train_data_gause()
+    #print(f"train_data={test_data_y_array.shape[0]}") #gause_train_data, mean_train_data= AgingData.get_train_data_gause()
     #gause_test_data, mean_test_data= AgingData.get_test_data_gause()
     #print(f"test_data_x={np.shape(test_data_x_array)},test_data_y={np.shape(test_data_y_array)}")
     #print(mean_test_data)
@@ -40,4 +39,9 @@ for i, chip_id in enumerate(chip_ids):
     #print(f"gause value shape={np.shape(gause_train_data)},mean value shape={np.shape(mean_train_data)}")
     #gause_test_data, mean_test_data= AgingData.get_test_data_gause()
     #print(f"gause test value shape={np.shape(gause_train_data)},mean value shape={np.shape(mean_train_data)}")
-    AgingData.get_iterative_data()
+    test_data_x, test_data_y = AgingData.get_iterative_data()
+    test_data_x_predict = test_data_x[0:1000,:]
+    test_data_y_predict = test_data_y[0:1000]
+    #print(f"train_data_x={np.shape(test_data_x)},train_data_y={np.shape(test_data_y)}")
+    #print(f"train_data_x={np.shape(test_data_x_predict)},train_data_y={np.shape(test_data_y_predict)}")
+    print(f"train_data_x={test_data_x},train_data_y={test_data_y}")

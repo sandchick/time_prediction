@@ -249,3 +249,6 @@ for i, chip_id in enumerate(chip_ids):
 axes[0].set_ylabel('Relative Error ', fontsize = labelsz, labelpad = 30)
 plt.suptitle('Relative Error on Same Chip', fontsize = mtitlesz, x = 0.5, y = 1.03)
 plt.savefig('../img/paper/svr_RE_same.png', bbox_inches = 'tight')
+
+
+
