@@ -5,7 +5,7 @@ from data import Data
 import matplotlib.pyplot as plt
 from gptkalman import Kalman
 
-chip_ids = [2, 4, 5, 6 ]
+chip_ids = [2, 4]
 #chip_ids = [ 4, 5, 6, 8]
 train_sheet_num = 15
 #Arch = [128, 32, 8, 2, 1]
@@ -34,7 +34,7 @@ for i, chip_id in enumerate(tqdm(chip_ids)):
     KalmanData = FilterData.fliter()
     draw_x = np.array(range(len(KalmanData)))
     axes.plot(draw_x, AgingData, color = "blue", label='mean data',linewidth = linewidth)
-    axes.plot(draw_x, KalmanData, color = "green", label='Kalman filter data',linewidth = linewidth)
+    axes.plot(draw_x, KalmanData, color = "red", label='Kalman filter data',linewidth = linewidth)
     axes.set_xlabel('Time', fontsize = labelsz, labelpad = 30)
     axes.set_ylabel('Aging Factors', fontsize = labelsz, labelpad = 30)
     plt.suptitle('filter effert', fontsize = mtitlesz, x = 0.5, y = 1.03)

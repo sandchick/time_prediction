@@ -25,9 +25,11 @@ class Kalman:
     def fliter(self):
         kf = KalmanFilter(initial_state_mean=self.y[0],
                              n_dim_obs=1,
-                             observation_covariance=20,
-                             transition_covariance=0.005,
-                    transition_matrices=1)
+                             observation_covariance=50,
+                             transition_covariance=0.002,
+                             #observation_offsets=1,
+                             transition_offsets=0.001,
+                             transition_matrices=1)
         # 使用卡尔曼滤波器对时间序列进行预测
         filtered_state_means, filtered_state_covariances = kf.filter(self.y)
         return filtered_state_means
